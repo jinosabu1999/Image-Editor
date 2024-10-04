@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Editor</title>
+    <style>
+        :root {
+            --primary-color: #00ffff;
+            --secondary-color: #ff00ff;
+            --background-color: #111;
+            --text-color: #fff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--primary-color);
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .image-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto 20px;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.2);
+        }
+
+        #preview {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            border-radius: 15px;
+            height: 10px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--secondary-color);
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--secondary-color);
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+            box-shadow: 0 0 10px var(--secondary-color);
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            border: none;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+        }
+
+        @media (max-width: 600px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Image Editor</h1>
+        <div class="image-container">
+            <canvas id="preview"></canvas>
+        </div>
+        <div class="controls">
+            <div>
+                <label for="brightness">Brightness</label>
+                <input type="range" id="brightness" min="0" max="200" value="100">
+            </div>
+            <div>
+                <label for="contrast">Contrast</label>
+                <input type="range" id="contrast" min="0" max="200" value="100">
+            </div>
+            <div>
+                <label for="saturation">Saturation</label>
+                <input type="range" id="saturation" min="0" max="200" value="100">
+            </div>
+            <div>
+                <label for="blur">Blur</label>
+                <input type="range" id="blur" min="0" max="10" value="0" step="0.1">
+            </div>
+        </div>
+        <div class="filters">
+            <button class="filter-btn" data-filter="normal">Normal</button>
+            <button class="filter-btn" data-filter="grayscale">Grayscale</button>
+            <button class="filter-btn" data-filter="sepia">Sepia</button>
+            <button class="filter-btn" data-filter="invert">Invert</button>
+            <button class="filter-btn" data-filter="hue-rotate">Hue Rotate</button>
+        </div>
+        <div class="btn-container">
+            <label for="upload" class="btn">Upload Image</label>
+            <input type="file" id="upload" accept="image/*">
+            <button id="save" class="btn">Save Image</button>
+        </div>
+    </div>
+
+    <script>
+        const preview = document.getElementById('preview');
+        const ctx = preview.getContext('2d');
+        const brightnessInput = document.getElementById('brightness');
+        const contrastInput = document.getElementById('contrast');
+        const saturationInput = document.getElementById('saturation');
+        const blurInput = document.getElementById('blur');
+        const uploadInput = document.getElementById('upload');
+        const saveBtn = document.getElementById('save');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+
+        let img = new Image();
+        let originalImageData;
+        let currentFilter = 'normal';
+
+        function loadImage(src) {
+            img.crossOrigin = "anonymous";
+            img.src = src;
+            img.onload = () => {
+                preview.width = img.width;
+                preview.height = img.height;
+                ctx.drawImage(img, 0, 0, img.width, img.height);
+                originalImageData = ctx.getImageData(0, 0, img.width, img.height);
+                applyFilters();
+            };
+        }
+
+        loadImage('https://picsum.photos/500/300');
+
+        uploadInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                loadImage(event.target.result);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function applyFilters() {
+            const brightness = brightnessInput.value;
+            const contrast = contrastInput.value;
+            const saturation = saturationInput.value;
+            const blur = blurInput.value;
+
+            ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) blur(${blur}px)`;
+
+            switch (currentFilter) {
+                case 'grayscale':
+                    ctx.filter += ' grayscale(100%)';
+                    break;
+                case 'sepia':
+                    ctx.filter += ' sepia(100%)';
+                    break;
+                case 'invert':
+                    ctx.filter += ' invert(100%)';
+                    break;
+                case 'hue-rotate':
+                    ctx.filter += ' hue-rotate(90deg)';
+                    break;
+            }
+
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+        }
+
+        brightnessInput.addEventListener('input', applyFilters);
+        contrastInput.addEventListener('input', applyFilters);
+        saturationInput.addEventListener('input', applyFilters);
+        blurInput.addEventListener('input', applyFilters);
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                applyFilters();
+            });
+        });
+
+        saveBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'edited-image.png';
+            link.href = preview.toDataURL();
+            link.click();
+        });
+    </script>
+</body>
+</html>
